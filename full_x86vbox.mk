@@ -26,7 +26,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
 
 PRODUCT_NAME := full_x86vbox
-PRODUCT_DEVICE := x86
+PRODUCT_DEVICE := x86vbox
 PRODUCT_BRAND := AOSP_x86vbox
 PRODUCT_MODEL := Full_Android_x86vbox
 
@@ -34,7 +34,7 @@ TARGET_KERNEL_SOURCE := kernel
 TARGET_KERNEL_CONFIG := android-x86_defconfig
 TARGET_ARCH := x86
 
-PRODUCT_OUT ?= out/target/product/x86
+PRODUCT_OUT ?= out/target/product/$(PRODUCT_DEVICE)
 
 include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
 
@@ -43,11 +43,21 @@ include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
 
 LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 
+# Define this to use our own init.rc
+# TARGET_PROVIDES_INIT_RC := true
+#    device/generic/x86vbox/init.rc:root/init.rc \
+    device/generic/x86vbox/init.x86vbox.rc:root/init.x86vbox.rc \
+    device/generic/x86vbox/fstab.x86vbox:root/fstab.x86vbox \
+
+# For android_filesystem_config.h, configure file permission in system folder
+PRODUCT_PACKAGES += \
+   fs_config_files
+
+# define files to copy
 PRODUCT_COPY_FILES += \
-     $(LOCAL_KERNEL):kernel \
-     device/generic/x86vbox/fstab.x86:fstab.x86 \
-     device/generic/x86vbox/init.x86.rc:root/init.x86.rc \
-     device/generic/x86vbox/init.x86vbox.sh:system/etc/init.x86vbox.sh \
-     device/generic/x86vbox/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
-     device/generic/x86vbox/init.recovery.x86vbox.sh:root/init.recovery.x86vbox.sh
+    $(LOCAL_KERNEL):kernel \
+    device/generic/x86vbox/init.x86vbox.sh:system/etc/init.x86vbox.sh \
+    device/generic/x86vbox/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
+    device/generic/x86vbox/init.recovery.x86vbox.sh:root/init.recovery.x86vbox.sh
+
 

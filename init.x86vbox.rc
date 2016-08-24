@@ -12,6 +12,8 @@ on init
     # Support legacy paths
     symlink /storage/sdcard /sdcard
     symlink /storage/sdcard /mnt/sdcard
+    
+    mkdir /storage/disk 0755 root root
 
 on boot
     setsebool in_qemu 1
@@ -38,9 +40,9 @@ on boot
     stop akmd
 
 # start essential services
-    start qemud
-    start goldfish-logcat
-    start goldfish-setup
+#    start qemud
+#    start goldfish-logcat
+    start x86vbox-setup
 
     setprop ro.setupwizard.mode EMULATOR
 
@@ -62,17 +64,9 @@ on boot
 # something else.
 
 on fs
-# mount mtd partitions
-    # Mount /system rw first to give the filesystem a chance to save a checkpoint
-    mount yaffs2 mtd@system /system
-    mount yaffs2 mtd@system /system ro remount
-    mount yaffs2 mtd@userdata /data nosuid nodev
-    mount yaffs2 mtd@cache /cache nosuid nodev
+    mount_all /fstab.x86vbox
 
-# on fs
-#        mount_all /fstab.goldfish
-
-service goldfish-setup /system/etc/init.goldfish.sh
+service x86vbox-setup /system/etc/init.x86vbox.sh
     user root
     group root
     oneshot

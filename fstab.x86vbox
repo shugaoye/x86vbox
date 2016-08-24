@@ -4,7 +4,7 @@
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 
 
-#/dev/block/sda6						/system             ext4      ro	wait
-/dev/block/sda2					        /cache              ext2      nosuid,nodev    wait
-/dev/block/sda1					        /data               ext2      nosuid,nodev    wait,encryptable=/dev/block/sda1
-/dev/block/sda3                         /mnt/media_rw/sdcard     vfat      nosuid,nodev    wait 
+/dev/block/sda1						/storage/disk             ext4      ro	wait
+# /dev/block/sda2					        /cache              ext2      nosuid,nodev    wait
+# /dev/block/sda1					        /data               ext2      nosuid,nodev    wait,encryptable=/dev/block/sda1
+# /dev/block/sda3                         /mnt/media_rw/sdcard     vfat      nosuid,nodev    wait 
