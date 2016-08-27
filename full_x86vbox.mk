@@ -46,8 +46,6 @@ LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 # Define this to use our own init.rc
 # TARGET_PROVIDES_INIT_RC := true
 #    device/generic/x86vbox/init.rc:root/init.rc \
-    device/generic/x86vbox/init.x86vbox.rc:root/init.x86vbox.rc \
-    device/generic/x86vbox/fstab.x86vbox:root/fstab.x86vbox \
 
 # For android_filesystem_config.h, configure file permission in system folder
 PRODUCT_PACKAGES += \
@@ -56,38 +54,10 @@ PRODUCT_PACKAGES += \
 # define files to copy
 PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel \
+    device/generic/x86vbox/init.x86vbox.rc:root/init.x86vbox.rc \
+    device/generic/x86vbox/fstab.x86vbox:root/fstab.x86vbox \
     device/generic/x86vbox/init.x86vbox.sh:system/etc/init.x86vbox.sh \
     device/generic/x86vbox/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
     device/generic/x86vbox/init.recovery.x86vbox.sh:root/init.recovery.x86vbox.sh
 
-# Integrated from android-x86
-# Don't build emulator
-BUILD_EMULATOR ?= false
-BUILD_STANDALONE_EMULATOR ?= false
-BUILD_EMULATOR_QEMUD ?= false
-BUILD_EMULATOR_OPENGL ?= false
-BUILD_EMULATOR_OPENGL_DRIVER ?= false
-BUILD_EMULATOR_QEMU_PROPS ?= false
-BUILD_EMULATOR_CAMERA_HAL ?= false
-BUILD_EMULATOR_GPS_MODULE ?= false
-BUILD_EMULATOR_LIGHTS_MODULE ?= false
-BUILD_EMULATOR_SENSORS_MODULE ?= false
-
-BUILD_ARM_FOR_X86 := $(WITH_NATIVE_BRIDGE)
-
-BOARD_USE_LIBVA_INTEL_DRIVER := true
-BOARD_USE_LIBVA := true
-BOARD_USE_LIBMIX := true
-BOARD_USES_WRS_OMXIL_CORE := true
-USE_INTEL_OMX_COMPONENTS := true
-
-USE_OPENGL_RENDERER := true
-NUM_FRAMEBUFFER_SURFACE_BUFFERS ?= 3
-BOARD_USES_DRM_HWCOMPOSER ?= true
-
-USE_CAMERA_STUB ?= false
-
-# Get the hardware acceleration libraries
-TARGET_HARDWARE_3D := true
-BOARD_EGL_CFG ?= device/generic/common/gpu/egl_mesa.cfg
 $(call inherit-product-if-exists,$(LOCAL_PATH)/gpu/gpu_mesa.mk)

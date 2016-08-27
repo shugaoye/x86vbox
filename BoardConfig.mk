@@ -14,11 +14,11 @@
 #
 #******************************************************************************
 #
-# BoardConfig.mk - Board configuration file of virtual device armemu
+# BoardConfig.mk - Board configuration file of virtual device x86vbox
 #
-# Copyright (c) 2015 Roger Ye.  All rights reserved.
+# Copyright (c) 2016 Roger Ye.  All rights reserved.
 #
-# This is part of the build for virtual device armemu.
+# This is part of the build for virtual device x86vbox.
 #
 #******************************************************************************
 
@@ -29,21 +29,14 @@ TARGET_NO_KERNEL := true
 TARGET_ARCH := x86
 TARGET_CPU_ABI := x86
 
+TARGET_CPU_ABI_LIST_32_BIT := $(TARGET_CPU_ABI) $(TARGET_CPU_ABI2) $(NATIVE_BRIDGE_ABI_LIST_32_BIT)
+TARGET_CPU_ABI_LIST := $(TARGET_CPU_ABI_LIST_32_BIT)
+
 SMALLER_FONT_FOOTPRINT := true
 MINIMAL_FONT_FOOTPRINT := true
 # Some framework code requires this to enable BT
 BOARD_HAVE_BLUETOOTH := true
 BOARD_BLUETOOTH_BDROID_BUILDCFG_INCLUDE_DIR := device/generic/common/bluetooth
-
-# Build OpenGLES emulation libraries
-BUILD_EMULATOR_OPENGL := true
-BUILD_EMULATOR_OPENGL_DRIVER := true
-USE_OPENGL_RENDERER := true
-
-BOARD_USE_LEGACY_UI := true
-
-# share the same one across all mini-emulators
-BOARD_EGL_CFG := device/generic/goldfish/opengl/system/egl/egl.cfg
 
 TARGET_USERIMAGES_USE_EXT4 := true
 BOARD_SYSTEMIMAGE_PARTITION_SIZE := 576716800
@@ -56,3 +49,4 @@ TARGET_USERIMAGES_SPARSE_EXT_DISABLED := true
 BOARD_SEPOLICY_DIRS += build/target/board/generic/sepolicy
 BOARD_SEPOLICY_DIRS += build/target/board/generic_x86/sepolicy
 
+include device/generic/common/BoardConfig.mk
