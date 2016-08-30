@@ -1,4 +1,16 @@
 #!/system/bin/sh
+#
+# Copyright (C) 2016 The Android Open Source Project
+#
+#******************************************************************************
+#
+# init.x86vbox.sh - startup script for x86vbox
+#
+# Copyright (c) 2016 Roger Ye.  All rights reserved.
+#
+# This is part of the build for virtual device x86vbox.
+#
+#******************************************************************************
 
 # <-- init.goldfish.sh --
 
@@ -72,131 +84,456 @@ case "$my_ip" in
 esac
 # -- init.goldfish.sh -->
 
-unset LD_PRELOAD
+# -- android-x86 startup script --
+function set_property()
+{
+	setprop "$1" "$2"
+	[ -n "$DEBUG" ] && echo "$1"="$2" >> /dev/x86.prop
+}
 
-vbox_graph_mode="800x600-16"
-vbox_dpi="160"
-vbox_sdcard_drive="/dev/block/sda2"
+function init_misc()
+{
+	# device information
+	setprop ro.product.manufacturer "$(cat $DMIPATH/sys_vendor)"
+	setprop ro.product.model "$PRODUCT"
 
-# Disable cursor blinking - Thanks android-x86 :-)
-echo -e '\033[?17;0;0c' > /dev/tty0
+	# a hack for USB modem
+	lsusb | grep 1a8d:1000 && eject
 
-# SDCARD
-# if [ -b $vbox_sdcard_drive ]; then
-#   echo "Trying to mount $vbox_sdcard_drive" > /dev/ttyS3
-#   mount -t vfat -o fmask=0000,dmask=0000 $vbox_sdcard_drive /storage/sdcard
-#   if [ $? -ne 0 ]; then
-#     echo "Unable to mount $vbox_sdcard_drive, try to create FAT" > /dev/ttyS3
-#     newfs_msdos $vbox_sdcard_drive
-#     mount -t vfat -o fmask=0000,dmask=0000 $vbox_sdcard_drive /storage/sdcard
-#     if [ $? -ne 0 ]; then
-#       echo "Unable to create FAT" > /dev/ttyS3
-#     fi
-#   fi
-# else 
-#   echo "NO SDCARD" > /dev/ttyS3
-# fi
+	# in case no cpu governor driver autoloads
+	[ -d /sys/devices/system/cpu/cpu0/cpufreq ] || modprobe acpi-cpufreq
+}
 
-# prop_hardware_opengl=`/system/bin/androVM-prop get hardware_opengl`
-# Starting eth0 management
-# First check if eth0 is 'plugged'
-# if [ $prop_hardware_opengl ]; then
-#   /system/bin/netcfg eth0 up
-#   CARRIER=`cat /sys/class/net/eth0/carrier`
-#   if [ $CARRIER -eq 1 ]; then
-#     /system/bin/netcfg eth0 dhcp
-#     IPETH0=(`ifconfig eth0`)
-#     IPMGMT=${IPETH0[2]}
-#     /system/bin/androVM-prop set androvm_ip_management $IPMGMT
-#     echo "IP Management : $IPMGMT" > /dev/ttyS3
-#   else
-#     /system/bin/androVM-prop set androvm_ip_management 0.0.0.0
-#     echo "eth0 interface is not connected" > /dev/ttyS3
-#   fi
-# else
-#   (
-#     /system/bin/netcfg eth0 dhcp
-#     IPETH0=(`ifconfig eth0`)
-#     IPMGMT=${IPETH0[2]}
-#     /system/bin/androVM-prop set androvm_ip_management $IPMGMT
-#     echo "IP Management : $IPMGMT" > /dev/ttyS3 
-#   )&
-# fi
+function init_hal_audio()
+{
+	case "$PRODUCT" in
+		VirtualBox*|Bochs*)
+			[ -d /proc/asound/card0 ] || modprobe snd-sb16 isapnp=0 irq=5
+			;;
+		*)
+			;;
+	esac
 
-# Load parameters from virtualbox guest properties
-chown system /dev/vboxguest
-prop_vbox_graph_mode=`/system/bin/androVM-prop get vbox_graph_mode`
-if [ $prop_vbox_graph_mode ]; then
-  vbox_graph_mode=$prop_vbox_graph_mode
-  setprop androVM.vbox_graph_mode $prop_vbox_graph_mode
-fi
+	if [ "`cat /proc/asound/card0/id`" = "IntelHDMI" ]; then
+		[ -d /proc/asound/card1 ] || set_property ro.hardware.audio.primary hdmi
+	fi
+}
 
-prop_vbox_dpi=`/system/bin/androVM-prop get vbox_dpi`
-if [ $prop_vbox_dpi ]; then
-  vbox_dpi=$prop_vbox_dpi
-  setprop androVM.vbox_dpi $prop_vbox_dpi
-fi
+function init_hal_bluetooth()
+{
+	for r in /sys/class/rfkill/*; do
+		type=$(cat $r/type)
+		[ "$type" = "wlan" -o "$type" = "bluetooth" ] && echo 1 > $r/state
+	done
 
-prop_vbox_sdcard_drive=`/system/bin/androVM-prop get vbox_sdcard_drive`
-if [ $prop_vbox_sdcard_drive ]; then
-  vbox_sdcard_drive=$prop_vbox_sdcard_drive
-  setprop androVM.vbox_sdcard_drive $prop_vbox_sdcard_drive
-fi
+	case "$PRODUCT" in
+		T10*TA|HP*Omni*)
+			BTUART_PORT=/dev/ttyS1
+			;;
+		MacBookPro8*)
+			rmmod b43
+			modprobe b43 btcoex=0
+			modprobe btusb
+			;;
+		# FIXME
+		# Fix MacBook 2013-2015 (Air6/7&Pro11/12) BCM4360 ssb&wl conflict.
+		MacBookPro11* | MacBookPro12* | MacBookAir6* | MacBookAir7*)
+			rmmod b43
+			rmmod ssb
+			rmmod bcma
+			rmmod wl
+			modprobe wl
+			modprobe btusb
+			;;
+		*)
+			for bt in $(lsusb -v | awk ' /Class:.E0/ { print $9 } '); do
+				chown 1002.1002 $bt && chmod 660 $bt
+			done
+			modprobe btusb
+			;;
+	esac
 
-prop_keyboard_disable=`/system/bin/androVM-prop get keyboard_disable`
-if [ $prop_keyboard_disable ]; then
-  keyboard_disable=$prop_keyboard_disable
-  setprop androVM.keyboard_disable $prop_keyboard_disable
-fi
+	if [ -n "$BTUART_PORT" ]; then
+		set_property hal.bluetooth.uart $BTUART_PORT
+		chown bluetooth.bluetooth $BTUART_PORT
+		start btattach:-B$BTUART_PORT
+		log -t hciconfig -p i "`hciconfig`"
+	fi
+}
 
-prop_statusbar_present=`/system/bin/androVM-prop get statusbar_present`
-if [ $prop_statusbar_present ]; then
-  setprop qemu.hw.mainkeys 0
-fi 
+function init_hal_camera()
+{
+	return
+}
 
-prop_su_bypass=`/system/bin/androVM-prop get su_bypass`
-if [ $prop_su_bypass ]; then
-  setprop androVM.su.bypass 1
-fi 
+function init_hal_gps()
+{
+	# TODO
+	return
+}
 
-# UVESAFB
-# insmod /system/lib/cfbcopyarea.ko
-# insmod /system/lib/cfbfillrect.ko
-# insmod /system/lib/cfbimgblt.ko
-# insmod /system/lib/uvesafb.ko mode_option=$vbox_graph_mode scroll=redraw
+function set_drm_mode()
+{
+	case "$PRODUCT" in
+		ET1602*)
+			drm_mode=1366x768
+			;;
+		*)
+			;;
+	esac
 
-# if [ $prop_hardware_opengl ]; then
-#   if [ $IPMGMT ]; then
-#     setprop androVM.gles 1
-#     prop_hardware_opengl_disable_render=`/system/bin/androVM-prop get hardware_opengl_disable_render`
-#     if [ ! $prop_hardware_opengl_disable_render ]; then
-#       setprop androVM.gles.renderer 1
-#     fi
-#   else
-#     echo "eth0 is not configured correctly - HARDWARE OPENGL IS DISABLED !!!"  > /dev/ttyS3
-#     setprop ro.sf.lcd_density $vbox_dpi
-#     sleep 10
-#   fi
-# else
-#   setprop ro.sf.lcd_density $vbox_dpi
-# fi
+	[ -n "$drm_mode" ] && set_property debug.drm.mode.force $drm_mode
+}
 
-setprop ro.sf.lcd_density $vbox_dpi
-setprop ro.product.cpu.abi x86
-setprop ro.product.cpu.abilist32 x86
+function init_uvesafb()
+{
+	case "$PRODUCT" in
+		ET2002*)
+			UVESA_MODE=${UVESA_MODE:-1600x900}
+			;;
+		*)
+			;;
+	esac
 
-# ARM ABI
-abi2_set=`getprop ro.product.cpu.abi2`
-if [ ! $abi2_set ]; then
-  if [ -f /system/lib/libhoudini.so ]; then
-    setprop ro.product.cpu.abi2 armeabi-v7a
-  fi
-fi
-abi3_set=`getprop ro.product.cpu.abi3`
-if [ ! $abi3_set ]; then
-  if [ -f /system/lib/libhoudini.so ]; then
-    setprop ro.product.cpu.abi3 armeabi
-  fi
-fi
+	[ "$HWACCEL" = "0" ] && bpp=16 || bpp=32
+	modprobe uvesafb mode_option=${UVESA_MODE:-1024x768}-$bpp ${UVESA_OPTION:-mtrr=3 scroll=redraw}
+}
 
-setprop androVM.inited 1
+function init_hal_gralloc()
+{
+	case "$(cat /proc/fb | head -1)" in
+		*virtiodrmfb)
+#			set_property ro.hardware.hwcomposer drm
+			;&
+		0*inteldrmfb|0*radeondrmfb|0*nouveaufb|0*svgadrmfb)
+			set_property ro.hardware.gralloc drm
+			set_drm_mode
+			;;
+		"")
+			init_uvesafb
+			;&
+		0*)
+			;;
+	esac
+
+	[ -n "$DEBUG" ] && set_property debug.egl.trace error
+}
+
+function init_hal_hwcomposer()
+{
+	# TODO
+	return
+}
+
+function init_hal_lights()
+{
+	chown 1000.1000 /sys/class/backlight/*/brightness
+}
+
+function init_hal_power()
+{
+	for p in /sys/class/rtc/*; do
+		echo disabled > $p/device/power/wakeup
+	done
+
+	# TODO
+	case "$PRODUCT" in
+		*)
+			;;
+	esac
+}
+
+function init_hal_sensors()
+{
+	# if we have sensor module for our hardware, use it
+	ro_hardware=$(getprop ro.hardware)
+	[ -f /system/lib/hw/sensors.${ro_hardware}.so ] && return 0
+
+	local hal_sensors=kbd
+	case "$(cat $DMIPATH/uevent)" in
+		*Lucid-MWE*)
+			set_property ro.ignore_atkbd 1
+			hal_sensors=hdaps
+			;;
+		*ICONIA*W5*)
+			hal_sensors=w500
+			;;
+		*S10-3t*)
+			hal_sensors=s103t
+			;;
+		*Inagua*)
+			#setkeycodes 0x62 29
+			#setkeycodes 0x74 56
+			set_property ro.ignore_atkbd 1
+			set_property hal.sensors.kbd.type 2
+			;;
+		*TEGA*|*2010:svnIntel:*)
+			set_property ro.ignore_atkbd 1
+			set_property hal.sensors.kbd.type 1
+			io_switch 0x0 0x1
+			setkeycodes 0x6d 125
+			;;
+		*DLI*)
+			set_property ro.ignore_atkbd 1
+			set_property hal.sensors.kbd.type 1
+			setkeycodes 0x64 1
+			setkeycodes 0x65 172
+			setkeycodes 0x66 120
+			setkeycodes 0x67 116
+			setkeycodes 0x68 114
+			setkeycodes 0x69 115
+			setkeycodes 0x6c 114
+			setkeycodes 0x6d 115
+			;;
+		*tx2*)
+			setkeycodes 0xb1 138
+			setkeycodes 0x8a 152
+			set_property hal.sensors.kbd.type 6
+			set_property poweroff.doubleclick 0
+			set_property qemu.hw.mainkeys 1
+			;;
+		*MS-N0E1*)
+			set_property ro.ignore_atkbd 1
+			set_property poweroff.doubleclick 0
+			setkeycodes 0xa5 125
+			setkeycodes 0xa7 1
+			setkeycodes 0xe3 142
+			;;
+		*Aspire1*25*)
+			modprobe lis3lv02d_i2c
+			echo -n "enabled" > /sys/class/thermal/thermal_zone0/mode
+			;;
+		*ThinkPad*Tablet*)
+			modprobe hdaps
+			hal_sensors=hdaps
+			;;
+		*i7Stylus*)
+			set_property hal.sensors.iio.accel.matrix 1,0,0,0,-1,0,0,0,-1
+			;;
+		*)
+			;;
+	esac
+
+	# has iio sensor-hub?
+	if [ -n "`ls /sys/bus/iio/devices/iio:device* 2> /dev/null`" ]; then
+		busybox chown -R 1000.1000 /sys/bus/iio/devices/iio:device*/
+		lsmod | grep -q hid_sensor_accel_3d && hal_sensors=hsb || hal_sensors=iio
+	elif lsmod | grep -q lis3lv02d_i2c; then
+		hal_sensors=hdaps
+	fi
+
+	set_property ro.hardware.sensors $hal_sensors
+}
+
+function create_pointercal()
+{
+	if [ ! -e /data/misc/tscal/pointercal ]; then
+		mkdir -p /data/misc/tscal
+		touch /data/misc/tscal/pointercal
+		chown 1000.1000 /data/misc/tscal /data/misc/tscal/*
+		chmod 775 /data/misc/tscal
+		chmod 664 /data/misc/tscal/pointercal
+	fi
+}
+
+function init_tscal()
+{
+	case "$PRODUCT" in
+		ST70416-6*)
+			modprobe gslx680_ts_acpi
+			;&
+		T91|T101|ET2002|74499FU|945GSE-ITE8712|CF-19[CDYFGKLP]*)
+			create_pointercal
+			return
+			;;
+		*)
+			;;
+	esac
+
+	for usbts in $(lsusb | awk '{ print $6 }'); do
+		case "$usbts" in
+			0596:0001|0eef:0001)
+				create_pointercal
+				return
+				;;
+			*)
+				;;
+		esac
+	done
+}
+
+function init_ril()
+{
+	case "$(cat $DMIPATH/uevent)" in
+		*TEGA*|*2010:svnIntel:*|*Lucid-MWE*)
+			set_property rild.libpath /system/lib/libhuaweigeneric-ril.so
+			set_property rild.libargs "-d /dev/ttyUSB2 -v /dev/ttyUSB1"
+			set_property ro.radio.noril no
+			;;
+		*)
+			set_property ro.radio.noril yes
+			;;
+	esac
+}
+
+function init_cpu_governor()
+{
+	governor=$(getprop cpu.governor)
+
+	[ $governor ] && {
+		for cpu in $(ls -d /sys/devices/system/cpu/cpu?); do
+			echo $governor > $cpu/cpufreq/scaling_governor || return 1
+		done
+	}
+}
+
+function do_init()
+{
+	init_misc
+	init_hal_audio
+	init_hal_bluetooth
+	init_hal_camera
+	init_hal_gps
+	init_hal_gralloc
+	init_hal_hwcomposer
+	init_hal_lights
+	init_hal_power
+	init_hal_sensors
+	init_tscal
+	init_ril
+	post_init
+}
+
+function do_netconsole()
+{
+	modprobe netconsole netconsole="@/,@$(getprop dhcp.eth0.gateway)/"
+}
+
+function do_bootcomplete()
+{
+	init_cpu_governor
+
+	[ -z "$(getprop persist.sys.root_access)" ] && setprop persist.sys.root_access 3
+
+	# FIXME: autosleep works better on i965?
+	[ "$(getprop debug.mesa.driver)" = "i965" ] && setprop debug.autosleep 1
+
+	lsmod | grep -e brcmfmac && setprop wlan.no-unload-driver 1
+
+	case "$PRODUCT" in
+		1866???|1867???|1869???) # ThinkPad X41 Tablet
+			start tablet-mode
+			start wacom-input
+			setkeycodes 0x6d 115
+			setkeycodes 0x6e 114
+			setkeycodes 0x69 28
+			setkeycodes 0x6b 158
+			setkeycodes 0x68 172
+			setkeycodes 0x6c 127
+			setkeycodes 0x67 217
+			;;
+		6363???|6364???|6366???) # ThinkPad X60 Tablet
+			;&
+		7762???|7763???|7767???) # ThinkPad X61 Tablet
+			start tablet-mode
+			start wacom-input
+			setkeycodes 0x6d 115
+			setkeycodes 0x6e 114
+			setkeycodes 0x69 28
+			setkeycodes 0x6b 158
+			setkeycodes 0x68 172
+			setkeycodes 0x6c 127
+			setkeycodes 0x67 217
+			;;
+		7448???|7449???|7450???|7453???) # ThinkPad X200 Tablet
+			start tablet-mode
+			start wacom-input
+			setkeycodes 0xe012 158
+			setkeycodes 0x66 172
+			setkeycodes 0x6b 127
+			;;
+		*)
+			;;
+	esac
+
+#	[ -d /proc/asound/card0 ] || modprobe snd-dummy
+	for c in $(grep '\[.*\]' /proc/asound/cards | awk '{print $1}'); do
+		f=/system/etc/alsa/$(cat /proc/asound/card$c/id).state
+		if [ -e $f ]; then
+			alsa_ctl -f $f restore $c
+		else
+			alsa_ctl init $c
+			alsa_amixer -c $c set Master on
+			alsa_amixer -c $c set Master 100%
+			alsa_amixer -c $c set Headphone on
+			alsa_amixer -c $c set Headphone 100%
+			alsa_amixer -c $c set Speaker 100%
+			alsa_amixer -c $c set Capture 100%
+			alsa_amixer -c $c set Capture cap
+			alsa_amixer -c $c set PCM 100 unmute
+			alsa_amixer -c $c set SPO unmute
+			alsa_amixer -c $c set 'Mic Boost' 3
+			alsa_amixer -c $c set 'Internal Mic Boost' 3
+		fi
+	done
+}
+
+function do_hci()
+{
+	local hci=`hciconfig | grep ^hci | cut -d: -f1`
+	local btd="`getprop init.svc.bluetoothd`"
+	log -t bluetoothd -p i "$btd ($hci)"
+	if [ -n "`getprop hal.bluetooth.uart`" ]; then
+		[ "`getprop init.svc.bluetoothd`" = "running" ] && hciconfig $hci up
+	fi
+}
+
+PATH=/sbin:/system/bin:/system/xbin
+
+DMIPATH=/sys/class/dmi/id
+BOARD=$(cat $DMIPATH/board_name)
+PRODUCT=$(cat $DMIPATH/product_name)
+
+# import cmdline variables
+for c in `cat /proc/cmdline`; do
+	case $c in
+		BOOT_IMAGE=*|iso-scan/*|*.*=*)
+			;;
+		*=*)
+			eval $c
+			if [ -z "$1" ]; then
+				case $c in
+					HWACCEL=*)
+						set_property debug.egl.hw $HWACCEL
+						;;
+					DEBUG=*)
+						[ -n "$DEBUG" ] && set_property debug.logcat 1
+						;;
+				esac
+			fi
+			;;
+	esac
+done
+
+[ -n "$DEBUG" ] && set -x || exec &> /dev/null
+
+# import the vendor specific script
+hw_sh=/vendor/etc/init.sh
+[ -e $hw_sh ] && source $hw_sh
+
+case "$1" in
+	netconsole)
+		[ -n "$DEBUG" ] && do_netconsole
+		;;
+	bootcomplete)
+		do_bootcomplete
+		;;
+	hci)
+		do_hci
+		;;
+	init|"")
+		do_init
+		;;
+esac
+
+return 0

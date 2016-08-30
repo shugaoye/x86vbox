@@ -22,8 +22,10 @@
 #
 #******************************************************************************
 
-$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
+# $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+# $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
+# includes the base of Android-x86 platform
+$(call inherit-product,device/generic/common/x86vbox.mk)
 
 PRODUCT_NAME := full_x86vbox
 PRODUCT_DEVICE := x86vbox
@@ -44,20 +46,28 @@ include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
 LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 
 # Define this to use our own init.rc
-# TARGET_PROVIDES_INIT_RC := true
-#    device/generic/x86vbox/init.rc:root/init.rc \
+TARGET_PROVIDES_INIT_RC := true
 
 # For android_filesystem_config.h, configure file permission in system folder
 PRODUCT_PACKAGES += \
-   fs_config_files
+    drmserver \
+    hwcomposer.x86 \
+    libGLES_android \
+    v86d \
+    fs_config_files
 
 # define files to copy
 PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel \
+    device/generic/x86vbox/init.rc:root/init.rc \
     device/generic/x86vbox/init.x86vbox.rc:root/init.x86vbox.rc \
     device/generic/x86vbox/fstab.x86vbox:root/fstab.x86vbox \
     device/generic/x86vbox/init.x86vbox.sh:system/etc/init.x86vbox.sh \
     device/generic/x86vbox/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
     device/generic/x86vbox/init.recovery.x86vbox.sh:root/init.recovery.x86vbox.sh
 
-$(call inherit-product-if-exists,$(LOCAL_PATH)/gpu/gpu_mesa.mk)
+# Get the hardware acceleration libraries
+# $(call inherit-product-if-exists,$(LOCAL_PATH)/gpu/gpu_mesa.mk)
+
+# Get native bridge settings
+# $(call inherit-product-if-exists,$(LOCAL_PATH)/nativebridge/nativebridge.mk)
