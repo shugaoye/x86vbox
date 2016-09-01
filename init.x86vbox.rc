@@ -99,6 +99,19 @@ on boot
 on fs
     mount_all /fstab.x86vbox
 
+on post-fs
+    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh uvesafb
+
+on post-fs-data
+    mkdir /data/misc/wifi 0770 wifi wifi
+    mkdir /data/misc/wifi/sockets 0770 wifi wifi
+    mkdir /data/misc/wifi/wpa_supplicant 0770 wifi wifi
+    mkdir /data/misc/dhcp 0770 dhcp dhcp
+    mkdir /data/system 0775 system system
+
+    # Set indication (checked by vold) that we have finished this action
+    setprop vold.post_fs_data_done 1
+
 service x86vbox-setup /system/etc/init.x86vbox.sh
     user root
     group root
@@ -187,16 +200,16 @@ on property:system_init.startsurfaceflinger=0
 
 on property:sys.boot_completed=1
     write /proc/sys/kernel/ctrl-alt-del 0
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.x86vbox.sh bootcomplete
+    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh bootcomplete
 
 on property:init.svc.bluetoothd=running
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.x86vbox.sh hci
+    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh hci
 
 on property:init.svc.bluetoothd=stopped
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.x86vbox.sh hci
+    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh hci
 
-on property:net.dns1=*
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.x86vbox.sh netconsole
+#on property:net.dns1=*
+#    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh netconsole
 
 on property:debug.logcat=1
     class_start debug

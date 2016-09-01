@@ -18,17 +18,22 @@ on early-init
     # Set the security context of /adb_keys if present.
     restorecon /adb_keys
 
+    mount debugfs /sys/kernel/debug /sys/kernel/debug mode=755
+
+    # for /lib/firmware
+    symlink system/lib /lib
+
     start ueventd
 
 on init
     sysclktz 0
 
     # Backward compatibility.
-    symlink /system/etc /etc
-    symlink /sys/kernel/debug /d
+    symlink system/etc /etc
+    symlink sys/kernel/debug /d
 
     # Link /vendor to /system/vendor for devices without a vendor partition.
-    symlink /system/vendor /vendor
+    symlink system/vendor /vendor
 
     # Create cgroup mount point for cpu accounting
     mkdir /acct
@@ -79,8 +84,8 @@ on init
     mkdir /mnt/runtime/write/self 0755 root root
 
     # Symlink to keep legacy apps working in multi-user world
-    symlink /storage/self/primary /sdcard
-    symlink /mnt/user/0/primary /mnt/runtime/default/self/primary
+    symlink storage/self/primary /sdcard
+    symlink ../../../mnt/user/0/primary /mnt/runtime/default/self/primary
 
     # memory control cgroup
     mkdir /dev/memcg 0700 root system
@@ -104,7 +109,7 @@ on init
     write /proc/sys/kernel/kptr_restrict 2
     write /proc/sys/vm/mmap_min_addr 32768
     write /proc/sys/net/ipv4/ping_group_range "0 2147483647"
-    write /proc/sys/net/unix/max_dgram_qlen 300
+    write /proc/sys/net/unix/max_dgram_qlen 600
     write /proc/sys/kernel/sched_rt_runtime_us 950000
     write /proc/sys/kernel/sched_rt_period_us 1000000
 
@@ -123,6 +128,7 @@ on init
     mkdir /dev/cpuctl
     mount cgroup none /dev/cpuctl cpu
     chown system system /dev/cpuctl
+    chmod 0660 /dev/cpuctl
     chown system system /dev/cpuctl/tasks
     chmod 0666 /dev/cpuctl/tasks
     write /dev/cpuctl/cpu.shares 1024
@@ -165,13 +171,19 @@ on init
     chown system system /dev/cpuset/foreground
     chown system system /dev/cpuset/foreground/boost
     chown system system /dev/cpuset/background
+    chown system system /dev/cpuset/system-background
     chown system system /dev/cpuset/tasks
     chown system system /dev/cpuset/foreground/tasks
     chown system system /dev/cpuset/foreground/boost/tasks
     chown system system /dev/cpuset/background/tasks
+    chown system system /dev/cpuset/system-background/tasks
+
+    # set system-background to 0775 so SurfaceFlinger can touch it
+    chmod 0775 /dev/cpuset/system-background
     chmod 0664 /dev/cpuset/foreground/tasks
     chmod 0664 /dev/cpuset/foreground/boost/tasks
     chmod 0664 /dev/cpuset/background/tasks
+    chmod 0664 /dev/cpuset/system-background/tasks
     chmod 0664 /dev/cpuset/tasks
 
 
@@ -369,7 +381,7 @@ on post-fs-data
     mkdir /data/adb 0700 root root
 
     # symlink to bugreport storage location
-    symlink /data/data/com.android.shell/files/bugreports /data/bugreports
+    symlink data/com.android.shell/files/bugreports /data/bugreports
 
     # Separate location for storing security policy files on data
     mkdir /data/security 0711 system system
@@ -580,7 +592,7 @@ service console /system/bin/sh
     class core
     console
     disabled
-    user shell
+#   user shell
     group shell log
     seclabel u:r:shell:s0
 
@@ -648,10 +660,9 @@ service ril-daemon /system/bin/rild
 
 service surfaceflinger /system/bin/surfaceflinger
     class core
-    user system
+#   user system
     group graphics drmrpc
     onrestart restart zygote
-    writepid /dev/cpuset/system-background/tasks
 
 service drm /system/bin/drmserver
     class main
@@ -752,10 +763,10 @@ on property:persist.logd.logpersistd=logcatd
     # all exec/services are called with umask(077), so no gain beyond 0700
     mkdir /data/misc/logd 0700 logd log
     # logd for write to /data/misc/logd, log group for read from pstore (-L)
-    exec - logd log -- /system/bin/logcat -L -b all -v threadtime -v usec -v printable -D -f /data/misc/logd/logcat -r 64 -n 256
+    exec - logd log -- /system/bin/logcat -L -b all -v threadtime -v usec -v printable -D -f /data/misc/logd/logcat -r 1024 -n 256
     start logcatd
 
-service logcatd /system/bin/logcat -b all -v threadtime -v usec -v printable -D -f /data/misc/logd/logcat -r 64 -n 256
+service logcatd /system/bin/logcat -b all -v threadtime -v usec -v printable -D -f /data/misc/logd/logcat -r 1024 -n 256
     class late_start
     disabled
     # logd for write to /data/misc/logd, log group for read from log daemon
