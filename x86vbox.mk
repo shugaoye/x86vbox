@@ -14,5 +14,28 @@
 # limitations under the License.
 #
 
-PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/x86vbox.mk
+# includes the base of Android-x86 platform
+$(call inherit-product,device/generic/common/x86.mk)
+
+# Overrides
+PRODUCT_NAME := x86vbox
+PRODUCT_BRAND := Android-x86
+PRODUCT_DEVICE := x86vbox
+PRODUCT_MODEL := Generic Android-x86
+
+TARGET_KERNEL_SOURCE := kernel
+TARGET_KERNEL_CONFIG := android-x86_defconfig
+TARGET_ARCH := x86
+
+PRODUCT_OUT ?= out/target/product/$(PRODUCT_DEVICE)
+
+include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
+
+# define build targets for kernel
+.PHONY: $(TARGET_PREBUILT_KERNEL)
+
+LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+
+PRODUCT_COPY_FILES += \
+    $(LOCAL_KERNEL):kernel \
+
