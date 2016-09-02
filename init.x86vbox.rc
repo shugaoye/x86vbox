@@ -100,7 +100,7 @@ on fs
     mount_all /fstab.x86vbox
 
 on post-fs
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh uvesafb
+    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh
 
 on post-fs-data
     mkdir /data/misc/wifi 0770 wifi wifi

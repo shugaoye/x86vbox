@@ -22,8 +22,6 @@
 #
 #******************************************************************************
 
-# $(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
-# $(call inherit-product, $(SRC_TARGET_DIR)/product/full.mk)
 # includes the base of Android-x86 platform
 $(call inherit-product,device/generic/common/x86vbox.mk)
 
@@ -50,11 +48,16 @@ TARGET_PROVIDES_INIT_RC := true
 
 # For android_filesystem_config.h, configure file permission in system folder
 PRODUCT_PACKAGES += \
+    wpa_supplicant \
+    wpa_supplicant.conf \
+    libwpa_client \
+    hostapd \
     drmserver \
     hwcomposer.x86 \
     libGLES_android \
     v86d \
     fs_config_files
+
 
 # define files to copy
 PRODUCT_COPY_FILES += \
@@ -66,8 +69,3 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
     device/generic/x86vbox/init.recovery.x86vbox.sh:root/init.recovery.x86vbox.sh
 
-# Get the hardware acceleration libraries
-# $(call inherit-product-if-exists,$(LOCAL_PATH)/gpu/gpu_mesa.mk)
-
-# Get native bridge settings
-# $(call inherit-product-if-exists,$(LOCAL_PATH)/nativebridge/nativebridge.mk)
