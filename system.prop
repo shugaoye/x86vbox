@@ -1,0 +1,14 @@
+#
+# system.prop for x86vbox
+#
+
+# rild.libpath=/system/lib/libreference-ril.so
+# rild.libargs=-d /dev/ttyS0
+
+
+ro.sf.lcd_density = 240
+
+#
+# system.prop for twrp emulated device
+#
+# ro.kernel.qemu=1
