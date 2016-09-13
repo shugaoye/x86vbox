@@ -32,7 +32,7 @@ snod:
 	cd ../../..;make snod
 
 initrd_img:
-	cd ../../..;make initrd 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
+	cd ../../..;make initrd USE_SQUASHFS=0
 
 ramdisk:
 	rm ${OUT}/ramdisk.img
