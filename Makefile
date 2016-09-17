@@ -23,7 +23,7 @@
 #******************************************************************************
 
 all:
-	cd ../../..;make showcommands 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
+	cd ../../..;make -j4 showcommands 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
 
 x86vbox:
 	cd ../../..;make -j4
@@ -35,6 +35,17 @@ initrd_img:
 	cd ../../..;make initrd USE_SQUASHFS=0
 
 ramdisk:
+	cd ../../..;make -j4
+
+clean-ramdisk:
 	rm ${OUT}/ramdisk.img
 	rm -rf ${OUT}/root
-	cd ../../..;make -j4
+
+recoveryimage:
+	cd ../../..;make -j4 recoveryimage 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
+
+clean-recoveryimage:
+	rm ${OUT}/recovery.img
+	rm -rf ${OUT}/recovery/root
+	rm ${OUT}/ramdisk-recovery.img
+	

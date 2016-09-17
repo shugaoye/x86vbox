@@ -37,5 +37,8 @@ include $(TARGET_KERNEL_SOURCE)/AndroidKernel.mk
 LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 
 PRODUCT_COPY_FILES += \
+    device/generic/x86vbox/recovery.fstab:recovery/root/etc/recovery.fstab \
+    device/generic/x86vbox/recovery/root/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
+    device/generic/x86vbox/recovery/root/sbin/network_start.sh:recovery/root/sbin/network_start.sh \
+    device/generic/x86vbox/recovery/root/sbin/create_partitions.sh:recovery/root/sbin/create_partitions.sh \
     $(LOCAL_KERNEL):kernel \
-

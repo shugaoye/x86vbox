@@ -51,6 +51,7 @@ DEVICE_RESOLUTION := 320x480
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 RECOVERY_SDCARD_ON_DATA := true
 TW_EXCLUDE_MTP := true
+TWRP_EVENT_LOGGING := true
 # This excludes parted from the build... parted is prebuilt and for arm CPU only
 BOARD_HAS_NO_REAL_SDCARD := true
 
