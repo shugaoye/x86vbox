@@ -23,7 +23,7 @@
 #******************************************************************************
 
 all:
-	cd ../../..;make -j4 showcommands 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
+	cd ../../..;make -j4 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
 
 x86vbox:
 	cd ../../..;make -j4

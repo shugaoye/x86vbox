@@ -47,13 +47,15 @@ BOARD_HAS_LARGE_FILESYSTEM := true
 TARGET_USERIMAGES_USE_EXT4 := true
 
 # TWRP specific build flags
-DEVICE_RESOLUTION := 320x480
+DEVICE_RESOLUTION := 1024x768
 RECOVERY_GRAPHICS_USE_LINELENGTH := true
 RECOVERY_SDCARD_ON_DATA := true
 TW_EXCLUDE_MTP := true
 TWRP_EVENT_LOGGING := true
 # This excludes parted from the build... parted is prebuilt and for arm CPU only
 BOARD_HAS_NO_REAL_SDCARD := true
+# Double buffer cannot work well on virtualbox
+RECOVERY_GRAPHICS_FORCE_SINGLE_BUFFER := true
 
 #
 # TWRP configuration END
