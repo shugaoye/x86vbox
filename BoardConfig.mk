@@ -56,6 +56,8 @@ TWRP_EVENT_LOGGING := true
 BOARD_HAS_NO_REAL_SDCARD := true
 # Double buffer cannot work well on virtualbox
 RECOVERY_GRAPHICS_FORCE_SINGLE_BUFFER := true
+# Define x86vbox specific implementation in recovery
+X86VBOX_RECOVERY := true
 
 #
 # TWRP configuration END
