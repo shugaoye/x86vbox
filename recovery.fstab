@@ -11,5 +11,5 @@
 /dev/block/sda2      /data         ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 /dev/block/sda3      /sdcard       vfat      defaults      voldmanaged=sdcard:auto
 /dev/block/sda5      /cache        ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
-/dev/block/sda6      /misc         emmc      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
-/dev/block/sda7      /recovery     ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
+/dev/block/sda6      /misc         emmc      defaults    defaults
+/dev/block/sda7      /recovery     emmc      defaults    defaults
