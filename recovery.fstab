@@ -3,7 +3,6 @@
 # The filesystem that contains the filesystem checker binary (typically /system) cannot
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 
-<<<<<<< HEAD
 #/dev/block/sda1      /system       ext4      ro                                                    wait
 #/dev/block/sda2      /data         ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 #/dev/block/sda3      /sdcard       vfat      defaults      voldmanaged=sdcard:auto
@@ -11,17 +10,10 @@
 #/dev/block/sda6      /misc         emmc      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 #/dev/block/sda7      /recovery     ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 
-/dev/block/sda1       /system       ext4     ro,noatime     wait
-/dev/block/sda2       /data         ext4     nosuid,nodev,noatime,discard,barrier=1,data=ordered,noauto_da_alloc     wait
-/dev/block/sda3       /sdcard       vfat     defaults      voldmanaged=sdcard:auto
-/dev/block/sda5       /cache        ext4     nosuid,nodev,noatime,barrier=1,data=ordered     wait
-/dev/block/sda6       /misc         emmc     defaults	      defaults
-/dev/block/sda7       /recovery     emmc     defaults	      defaults
-=======
 /dev/block/sda1      /system       ext4      ro                                                    wait
 /dev/block/sda2      /data         ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 /dev/block/sda3      /sdcard       vfat      defaults      voldmanaged=sdcard:auto
 /dev/block/sda5      /cache        ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 /dev/block/sda6      /misc         emmc      defaults    defaults
 /dev/block/sda7      /recovery     emmc      defaults    defaults
->>>>>>> ef97f364316255348010c5e9283c61c877b089f4
+
