@@ -16,4 +16,5 @@
 /dev/block/sda5      /cache        ext4      noatime,nosuid,nodev,nomblk_io_submit,errors=panic    wait
 /dev/block/sda6      /misc         emmc      defaults    defaults
 /dev/block/sda7      /recovery     emmc      defaults    defaults
+/dev/block/sda8      /boot         emmc      defaults    defaults
 
