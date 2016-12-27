@@ -46,5 +46,23 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/recovery.fstab:recovery/root/etc/recovery.fstab \
     device/generic/x86vbox/recovery/root/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
     device/generic/x86vbox/recovery/root/sbin/network_start.sh:recovery/root/sbin/network_start.sh \
+    device/generic/x86vbox/recovery/root/sbin/init.x86vbox.sh:recovery/root/sbin/init.x86vbox.sh \
     device/generic/x86vbox/recovery/root/sbin/create_partitions.sh:recovery/root/sbin/create_partitions.sh \
+    device/generic/x86vbox/recovery/root/x86vbox/atkbd.ko:recovery/root/x86vbox/atkbd.ko \
+    device/generic/x86vbox/recovery/root/x86vbox/cn.ko:recovery/root/x86vbox/cn.ko \
+    device/generic/x86vbox/recovery/root/x86vbox/uvesafb.ko:recovery/root/x86vbox/uvesafb.ko \
+    device/generic/x86vbox/recovery/root/lib/libc.so.6:recovery/root/lib/libc.so.6 \
+    device/generic/x86vbox/recovery/root/lib/libcrypt.so.1:recovery/root/lib/libcrypt.so.1 \
+    device/generic/x86vbox/recovery/root/lib/libdl.so.2:recovery/root/lib/libdl.so.2 \
+    device/generic/x86vbox/recovery/root/lib/libm.so.6:recovery/root/lib/libm.so.6 \
+    device/generic/x86vbox/recovery/root/lib/libntfs-3g.so.31:recovery/root/lib/libntfs-3g.so.31 \
+    device/generic/x86vbox/recovery/root/lib/libpthread.so.0:recovery/root/lib/libpthread.so.0 \
+    device/generic/x86vbox/recovery/root/lib/librt.so.1:recovery/root/lib/librt.so.1 \
+    device/generic/x86vbox/recovery/root/bin/busybox:recovery/root/bin/busybox \
+    device/generic/x86vbox/recovery/root/bin/ld-linux.so.2:recovery/root/bin/ld-linux.so.2 \
+    device/generic/x86vbox/recovery/root/bin/lndir:recovery/root/bin/lndir \
     $(LOCAL_KERNEL):kernel \
+
+# Need to create symbol link in init.recovery.x86vbox.rc
+#    device/generic/x86vbox/recovery/root/lib/ld-linux.so.2:recovery/root/lib/ld-linux.so.2 \
+#    device/generic/x86vbox/recovery/root/bin/sh:recovery/root/bin/sh \

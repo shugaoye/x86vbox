@@ -1,12 +1,12 @@
 on init
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh
+    exec -- /bin/sh /sbin/init.x86vbox.sh
 
 service network_start /sbin/network_start.sh
     user root
     seclabel u:r:recovery:s0
     oneshot
 
-service console /system/bin/sh
+service console /bin/sh
     class core
     console
 #    disabled
