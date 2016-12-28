@@ -70,11 +70,7 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/recovery/root/lib/libntfs-3g.so.31:recovery/root/lib/libntfs-3g.so.31 \
     device/generic/x86vbox/recovery/root/lib/libpthread.so.0:recovery/root/lib/libpthread.so.0 \
     device/generic/x86vbox/recovery/root/lib/librt.so.1:recovery/root/lib/librt.so.1 \
-    device/generic/x86vbox/recovery/root/lib/libc.so:recovery/root/lib/libc.so \
-    device/generic/x86vbox/recovery/root/lib/libc++.so:recovery/root/lib/libc++.so \
-    device/generic/x86vbox/recovery/root/lib/libdl.so:recovery/root/lib/libdl.so \
-    device/generic/x86vbox/recovery/root/lib/libm.so:recovery/root/lib/libm.so \
-    device/generic/x86vbox/recovery/root/bin/busybox:recovery/root/sbin/busybox \
+    device/generic/x86vbox/recovery/root/bin/busybox:recovery/root/bin/busybox \
     device/generic/x86vbox/recovery/root/bin/ld-linux.so.2:recovery/root/bin/ld-linux.so.2 \
     device/generic/x86vbox/recovery/root/bin/lndir:recovery/root/bin/lndir \
     $(LOCAL_KERNEL):kernel \
