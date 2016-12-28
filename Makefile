@@ -41,6 +41,9 @@ clean-ramdisk:
 	rm ${OUT}/ramdisk.img
 	rm -rf ${OUT}/root
 
+installer:
+	cd ../../..;out/host/linux-x86/bin/mkbootfs out/target/product/x86vbox/installer | gzip -9 > out/target/product/x86vbox/initrd.img
+
 ramdisk-recovery:
 	cd ../../..;out/host/linux-x86/bin/mkbootfs -d out/target/product/x86vbox/system out/target/product/x86vbox/recovery/root | out/host/linux-x86/bin/minigzip > out/target/product/x86vbox/ramdisk-recovery.img
 
