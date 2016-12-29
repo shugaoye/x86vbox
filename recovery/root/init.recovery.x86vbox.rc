@@ -1,5 +1,11 @@
+on early-init
+    # for /bin/busybox
+    symlink /bin/ld-linux.so.2 /lib/ld-linux.so.2
+    symlink /bin/busybox /bin/sh
+
 on init
-    exec -- /system/bin/logwrapper /system/bin/sh /system/etc/init.sh
+    mkdir /vendor
+    exec -- /bin/sh /sbin/init.x86vbox.sh
 
 service network_start /sbin/network_start.sh
     user root
