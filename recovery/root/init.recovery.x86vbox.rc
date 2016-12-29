@@ -6,7 +6,7 @@ service network_start /sbin/network_start.sh
     seclabel u:r:recovery:s0
     oneshot
 
-service console /system/bin/sh
+service console /bin/sh
     class core
     console
 #    disabled

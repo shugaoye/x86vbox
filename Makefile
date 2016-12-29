@@ -22,6 +22,11 @@
 #
 #******************************************************************************
 
+initrd_dir :=  ${OUT}/../../../../bootable/newinstaller/initrd
+TARGET_INSTALLER_OUT :=${OUT}/installer
+ACP := acp
+MKBOOTFS := mkbootfs
+
 all:
 	cd ../../..;make -j4 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
 
@@ -35,14 +40,20 @@ initrd_img:
 	cd ../../..;make initrd USE_SQUASHFS=0
 
 ramdisk:
-	cd ../../..;out/host/linux-x86/bin/mkbootfs -d out/target/product/x86vbox/system out/target/product/x86vbox/root | out/host/linux-x86/bin/minigzip > out/target/product/x86vbox/ramdisk.img
+	cd ../../..;$(MKBOOTFS) -d ${OUT}/system ${OUT}/root | minigzip > ${OUT}/ramdisk.img
 
 clean-ramdisk:
 	rm ${OUT}/ramdisk.img
 	rm -rf ${OUT}/root
 
+installer:
+	rm -rf $(TARGET_INSTALLER_OUT)/scripts
+	$(ACP) -pr $(initrd_dir)/scripts $(TARGET_INSTALLER_OUT)/scripts
+	$(ACP) -pr $(initrd_dir) $(TARGET_INSTALLER_OUT)
+	cd ../../..;$(MKBOOTFS) $(TARGET_INSTALLER_OUT) | gzip -9 > ${OUT}/initrd.img
+
 ramdisk-recovery:
-	cd ../../..;out/host/linux-x86/bin/mkbootfs -d out/target/product/x86vbox/system out/target/product/x86vbox/recovery/root | out/host/linux-x86/bin/minigzip > out/target/product/x86vbox/ramdisk-recovery.img
+	cd ../../..;$(MKBOOTFS) -d ${OUT}/system ${OUT}/recovery/root | minigzip > ${OUT}/ramdisk-recovery.img
 
 recoveryimage:
 	cd ../../..;make -j4 recoveryimage 2>&1 | tee x86vbox-`date +%Y%m%d`.txt

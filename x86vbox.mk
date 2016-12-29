@@ -21,7 +21,7 @@ $(call inherit-product,device/generic/common/x86.mk)
 PRODUCT_NAME := x86vbox
 PRODUCT_BRAND := Android-x86
 PRODUCT_DEVICE := x86vbox
-PRODUCT_MODEL := x86vbox_ch12
+PRODUCT_MODEL := x86vbox_ch13
 
 TARGET_KERNEL_SOURCE := kernel
 TARGET_KERNEL_CONFIG := android-x86_defconfig
