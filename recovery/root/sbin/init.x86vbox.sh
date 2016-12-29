@@ -18,6 +18,6 @@ insmod vboxsf.ko
 # insmod syscopyarea.ko
 # insmod drm_kms_helper.ko
 # insmod vboxvideo.ko
-insmod uvesafb.ko mode_option=${UVESA_MODE:-1024x768}-$bpp
+insmod uvesafb.ko mode_option=${UVESA_MODE:-1024x768}-32
 
 /sbin/mount.vboxsf sdcard /vendor

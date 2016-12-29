@@ -43,6 +43,7 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/vbox/vboxguest.ko:system/vendor/vbox/vboxguest.ko \
     device/generic/x86vbox/vbox/vboxsf.ko:system/vendor/vbox/vboxsf.ko \
     device/generic/x86vbox/vbox/vboxvideo.ko:system/vendor/vbox/vboxvideo.ko \
+    device/generic/x86vbox/fstab.x86:root/fstab.x86 \
     device/generic/x86vbox/recovery.fstab:recovery/root/etc/recovery.fstab \
     device/generic/x86vbox/recovery/root/init.recovery.x86vbox.rc:root/init.recovery.x86vbox.rc \
     device/generic/x86vbox/recovery/root/sbin/network_start.sh:recovery/root/sbin/network_start.sh \
@@ -73,5 +74,13 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/recovery/root/bin/busybox:recovery/root/bin/busybox \
     device/generic/x86vbox/recovery/root/bin/ld-linux.so.2:recovery/root/bin/ld-linux.so.2 \
     device/generic/x86vbox/recovery/root/bin/lndir:recovery/root/bin/lndir \
+    device/generic/x86vbox/recovery/root/system/bin/linker:recovery/root/system/bin/linker \
+    device/generic/x86vbox/recovery/root/system/lib/libc.so:recovery/root/system/lib/libc.so \
+    device/generic/x86vbox/recovery/root/system/lib/libc++.so:recovery/root/system/lib/libc++.so \
+    device/generic/x86vbox/recovery/root/system/lib/libcutils.so:recovery/root/system/lib/libcutils.so \
+    device/generic/x86vbox/recovery/root/system/lib/liblog.so:recovery/root/system/lib/liblog.so \
+    device/generic/x86vbox/recovery/root/system/lib/libm.so:recovery/root/system/lib/libm.so \
+    device/generic/x86vbox/recovery/root/system/lib/libpcre.so:recovery/root/system/lib/libpcre.so \
+    device/generic/x86vbox/recovery/root/system/lib/libselinux.so:recovery/root/system/lib/libselinux.so \
     $(LOCAL_KERNEL):kernel \
 
