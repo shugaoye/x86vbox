@@ -33,6 +33,9 @@ all:
 x86vbox:
 	cd ../../..;make -j4
 
+librecovery_ui_x86vbox:
+	cd ../../..;make librecovery_ui_x86vbox
+
 snod:
 	cd ../../..;make snod
 

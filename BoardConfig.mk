@@ -63,3 +63,5 @@ RECOVERY_GRAPHICS_FORCE_SINGLE_BUFFER := true
 # TWRP configuration END
 #
 
+# device-specific extensions to the recovery UI
+TARGET_RECOVERY_UI_LIB := librecovery_ui_x86vbox
