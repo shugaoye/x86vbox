@@ -63,3 +63,6 @@ clean-recoveryimage:
 	rm -rf ${OUT}/recovery/root
 	rm ${OUT}/ramdisk-recovery.img
 	
+dist:
+	cd ../../..;mkdir -p dist_output
+	cd ../../..;make dist DIST_DIR=dist_output
