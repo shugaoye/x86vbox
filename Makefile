@@ -36,6 +36,9 @@ x86vbox:
 librecovery_ui_x86vbox:
 	cd ../../..;make librecovery_ui_x86vbox
 
+librecovery_updater_x86vbox:
+	cd ../../..;make librecovery_updater_x86vbox
+
 snod:
 	cd ../../..;make snod
 
@@ -67,5 +70,7 @@ clean-recoveryimage:
 	rm ${OUT}/ramdisk-recovery.img
 	
 dist:
+	rm -f images/x86vbox.dat
+	zip -j images/x86vbox.dat ${OUT}/ramdisk.img ${OUT}/ramdisk-recovery.img ${OUT}/kernel
 	cd ../../..;mkdir -p dist_output
 	cd ../../..;make dist DIST_DIR=dist_output

@@ -65,3 +65,10 @@ RECOVERY_GRAPHICS_FORCE_SINGLE_BUFFER := true
 
 # device-specific extensions to the recovery UI
 TARGET_RECOVERY_UI_LIB := librecovery_ui_x86vbox
+
+# add device-specific extensions to the updater binary
+TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_x86vbox
+# TARGET_RECOVERY_UPDATER_EXTRA_LIBS +=
+
+ADD_RADIO_FILES := true
+TARGET_RELEASETOOLS_EXTENSIONS := $(LOCAL_PATH)

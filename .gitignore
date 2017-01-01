@@ -30,3 +30,6 @@ proguard/
 .cproject
 .project
 *.*~
+
+# image files
+images/x86vbox.dat
