@@ -73,4 +73,4 @@ dist:
 	rm -f images/x86vbox.dat
 	zip -j images/x86vbox.dat ${OUT}/ramdisk.img ${OUT}/ramdisk-recovery.img ${OUT}/kernel
 	cd ../../..;mkdir -p dist_output
-	cd ../../..;make dist DIST_DIR=dist_output
+	cd ../../..;make dist DIST_DIR=dist_output 2>&1 | tee x86vbox-`date +%Y%m%d`.txt

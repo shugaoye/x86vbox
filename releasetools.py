@@ -1,7 +1,7 @@
 import common
 
 def FullOTA_InstallEnd(info):
-  info.script.Print("Writing x86vbox images...")
+  info.script.Print("FullOTA_InstallEnd: Writing x86vbox images...")
   # copy the data into the package.
   x86vbox_dat = info.input_zip.read("RADIO/x86vbox.dat")
   common.ZipWriteStr(info.output_zip, "x86vbox.dat", x86vbox_dat)
@@ -11,6 +11,7 @@ def FullOTA_InstallEnd(info):
     """x86vbox.reprogram("the-key", package_extract_file("x86vbox.dat"));""")
 
 def IncrementalOTA_InstallEnd(info):
+  info.script.Print("IncrementalOTA_InstallEnd: Writing x86vbox images...")
   # copy the data into the package.
   source_x86vbox_dat = info.source_zip.read("RADIO/x86vbox.dat")
   target_x86vbox_dat = info.target_zip.read("RADIO/x86vbox.dat")
