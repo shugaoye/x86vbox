@@ -70,6 +70,11 @@ clean-recoveryimage:
 	rm ${OUT}/ramdisk-recovery.img
 	
 dist:
+	if [ -d "images" ]; then \
+	echo "Find images folder."; \
+	else \
+	mkdir images; \
+	fi
 	rm -f images/x86vbox.dat
 	zip -j images/x86vbox.dat ${OUT}/ramdisk.img ${OUT}/ramdisk-recovery.img ${OUT}/kernel
 	cd ../../..;mkdir -p dist_output
