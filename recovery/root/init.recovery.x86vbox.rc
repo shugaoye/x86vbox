@@ -2,6 +2,7 @@ on early-init
     # for /bin/busybox
     symlink /bin/ld-linux.so.2 /lib/ld-linux.so.2
     symlink /bin/busybox /bin/sh
+    symlink /bin/busybox /sbin/sh
 
 on init
     mkdir /vendor
