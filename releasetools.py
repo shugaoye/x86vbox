@@ -8,7 +8,9 @@ def FullOTA_InstallEnd(info):
 
   # emit the script code to install this data on the device
   info.script.AppendExtra(
-    """x86vbox.reprogram("the-key", package_extract_file("x86vbox.dat"));""")
+    """package_extract_file("x86vbox.dat", "/tmp/x86vbox.zip");""")
+  info.script.AppendExtra(
+    """x86vbox.reprogram("/tmp/x86vbox.zip", "/android-x86vbox");""")
 
 def IncrementalOTA_InstallEnd(info):
   info.script.Print("Incremental OTA update, Writing x86vbox images...")
@@ -26,5 +28,7 @@ def IncrementalOTA_InstallEnd(info):
 
   # emit the script code to install this data on the device
   info.script.AppendExtra(
-    """x86vbox.reprogram("the-key", package_extract_file("x86vbox.dat"));""")
+    """package_extract_file("x86vbox.dat", "/tmp/x86vbox.zip");""")
+  info.script.AppendExtra(
+    """x86vbox.reprogram("/tmp/x86vbox.zip", "/android-x86vbox");""")
 

@@ -19,31 +19,49 @@
 #include <string.h>
 
 #include "edify/expr.h"
+#include "minzip/Zip.h"
+#include "minzip/SysUtil.h"
+
+extern struct selabel_handle *sehandle;
 
 Value* ReprogramX86vboxFn(const char* name, State* state, int argc, Expr* argv[]) {
-  int successful = 0;
+  bool success = false;
 
   if (argc != 2) {
     return ErrorAbort(state, "%s() expects 2 args, got %d", name, argc);
   }
 
-  Value* key;
-  Value* image;
-  if (ReadValueArgs(state, argv, 2, &key, &image) != 0) {
-    return NULL;   // ReadValueArgs() will have set the error message
+  char* zip_path;
+  char* dest_path;
+  if (ReadArgs(state, argv, 2, &zip_path, &dest_path) < 0) return NULL;
+
+  /* Start to extract files. */
+  MemMapping map;
+  if (sysMapFile(zip_path, &map) != 0) {
+      printf("failed to map package %s\n", zip_path);
+      goto done;
   }
 
-  if (key->type != VAL_STRING || image->type != VAL_BLOB) {
-    ErrorAbort(state, "arguments to %s() have wrong type", name);
-    FreeValue(key);
-    FreeValue(image);
-    return NULL;
+  ZipArchive za;
+  int err;
+  err = mzOpenZipArchive(map.addr, map.length, &za);
+  if (err != 0) {
+      printf("failed to open package %s: %s\n",
+    		  zip_path, strerror(err));
+      goto done;
   }
 
-  FreeValue(key);
-  FreeValue(image);
+  struct utimbuf timestamp = { 1217592000, 1217592000 };  // 8/1/2008 default
 
-  return StringValue(strdup(successful ? "t" : ""));
+  success = mzExtractRecursive(&za, "/", dest_path,
+                                    &timestamp,
+                                    NULL, NULL, sehandle);
+  /* End to extract files. */
+done:
+  free(zip_path);
+  free(dest_path);
+
+  return StringValue(strdup(success ? "t" : ""));
 }
 
 void Register_librecovery_updater_x86vbox() {
