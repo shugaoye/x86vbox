@@ -10,7 +10,7 @@ def FullOTA_InstallEnd(info):
   info.script.AppendExtra(
     """package_extract_file("x86vbox.dat", "/tmp/x86vbox.zip");""")
   info.script.AppendExtra(
-    """x86vbox.reprogram("/tmp/x86vbox.zip", "/android-x86vbox");""")
+    """x86vbox.reprogram("/tmp/x86vbox.zip", "/system/android-x86vbox");""")
 
 def IncrementalOTA_InstallEnd(info):
   info.script.Print("Incremental OTA update, Writing x86vbox images...")
@@ -30,5 +30,5 @@ def IncrementalOTA_InstallEnd(info):
   info.script.AppendExtra(
     """package_extract_file("x86vbox.dat", "/tmp/x86vbox.zip");""")
   info.script.AppendExtra(
-    """x86vbox.reprogram("/tmp/x86vbox.zip", "/android-x86vbox");""")
+    """x86vbox.reprogram("/tmp/x86vbox.zip", "/system/android-x86vbox");""")
 

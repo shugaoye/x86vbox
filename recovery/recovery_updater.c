@@ -53,9 +53,10 @@ Value* ReprogramX86vboxFn(const char* name, State* state, int argc, Expr* argv[]
 
   struct utimbuf timestamp = { 1217592000, 1217592000 };  // 8/1/2008 default
 
-  success = mzExtractRecursive(&za, "/", dest_path,
+  success = mzExtractRecursive(&za, "android-x86vbox", dest_path,
                                     &timestamp,
                                     NULL, NULL, sehandle);
+  printf("Extract %s to %s %s, status=%d\n", zip_path, dest_path, success);
   /* End to extract files. */
 done:
   free(zip_path);
