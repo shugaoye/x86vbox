@@ -56,9 +56,11 @@ Value* ReprogramX86vboxFn(const char* name, State* state, int argc, Expr* argv[]
   success = mzExtractRecursive(&za, "android-x86vbox", dest_path,
                                     &timestamp,
                                     NULL, NULL, sehandle);
-  printf("Extract %s to %s %s, status=%d\n", zip_path, dest_path, success);
   /* End to extract files. */
 done:
+  mzCloseZipArchive(&za);
+  sysReleaseMap(&map);
+  unlink(zip_path);
   free(zip_path);
   free(dest_path);
 
