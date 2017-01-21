@@ -23,7 +23,7 @@
 #******************************************************************************
 
 all:
-	cd ../../..;make -j4 showcommands 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
+	cd ../../..;make -j4 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
 
 x86vbox:
 	cd ../../..;make -j4
@@ -35,11 +35,14 @@ initrd_img:
 	cd ../../..;make initrd USE_SQUASHFS=0
 
 ramdisk:
-	cd ../../..;make -j4
+	cd ../../..;out/host/linux-x86/bin/mkbootfs -d out/target/product/x86vbox/system out/target/product/x86vbox/root | out/host/linux-x86/bin/minigzip > out/target/product/x86vbox/ramdisk.img
 
 clean-ramdisk:
 	rm ${OUT}/ramdisk.img
 	rm -rf ${OUT}/root
+
+ramdisk-recovery:
+	cd ../../..;out/host/linux-x86/bin/mkbootfs -d out/target/product/x86vbox/system out/target/product/x86vbox/recovery/root | out/host/linux-x86/bin/minigzip > out/target/product/x86vbox/ramdisk-recovery.img
 
 recoveryimage:
 	cd ../../..;make -j4 recoveryimage 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
