@@ -26,12 +26,23 @@ initrd_dir :=  ${OUT}/../../../../bootable/newinstaller/initrd
 TARGET_INSTALLER_OUT :=${OUT}/installer
 ACP := acp
 MKBOOTFS := mkbootfs
+X86VBOX_BOOT_IMAGES_DIR := images/android-x86vbox
 
 all:
 	cd ../../..;make -j4 2>&1 | tee x86vbox-`date +%Y%m%d`.txt
 
 x86vbox:
 	cd ../../..;make -j4
+
+updater:
+	cd ../../..;make updater
+	cp $OUT/system/bin/updater ~/temp/sbin
+
+librecovery_ui_x86vbox:
+	cd ../../..;make librecovery_ui_x86vbox
+
+librecovery_updater_x86vbox:
+	cd ../../..;make librecovery_updater_x86vbox
 
 snod:
 	cd ../../..;make snod
@@ -64,5 +75,14 @@ clean-recoveryimage:
 	rm ${OUT}/ramdisk-recovery.img
 	
 dist:
+	if [ -d "images" ]; then \
+	echo "Find images folder."; \
+	rm -rf images; \
+	fi
+	mkdir -p ${X86VBOX_BOOT_IMAGES_DIR}
+	cp ${OUT}/ramdisk.img ${X86VBOX_BOOT_IMAGES_DIR}
+	cp ${OUT}/ramdisk-recovery.img ${X86VBOX_BOOT_IMAGES_DIR}
+	cp ${OUT}/kernel ${X86VBOX_BOOT_IMAGES_DIR}
+	cd images; zip x86vbox.dat android-x86vbox/*
 	cd ../../..;mkdir -p dist_output
-	cd ../../..;make dist DIST_DIR=dist_output
+	cd ../../..;make dist DIST_DIR=dist_output 2>&1 | tee x86vbox-`date +%Y%m%d`.txt

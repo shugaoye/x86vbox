@@ -1,31 +1,49 @@
 #!/sbin/sh
-# This will repartition the emulated sdcard so that
-# you can emulate a newer, non-MTD device.
-# This partitioning scheme is based on a 1500MiB
-# sdcard.
-
-umount /external_sd
+# This will repartition the virtual hard disk so that
+# all recovery necessory partitions can be created.
+# This partitioning scheme is based on a 8000MiB
+# virtual hard disk.
 
 echo "Creating partition table..."
-# Wipe all partitions and give you a gpt partition table
-parted -s /dev/block/mmcblk0 mklabel gpt
-# 8MB boot partition
-parted -s /dev/block/mmcblk0 mkpart boot ext2 0 8MB
-# 8MB recovery partition
-parted -s /dev/block/mmcblk0 mkpart recovery ext2 8MB 16MB
-# 34 MB cache partition
-parted -s /dev/block/mmcblk0 mkpart cache ext2 16MB 50MB
-# sdcard partition
-parted -s /dev/block/mmcblk0 mkpart sdcard ext4 50MB 1536MB
+dd if=/dev/zero of=/dev/block/sda bs=1024 count=1024
+fdisk /dev/block/sda << EOF
+n
+p
+1
+1
+243
+n
+p
+2
+244
+365
+n
+p
+3
+366
+487
+n
+e
+488
+1044
+n
+488
+609
+n
+610
+633
+n
+634
+815
+n
+816
+1044
+t
+3
+c
+a
+1
+p
+w
+EOF          
 
-echo "Formatting cache..."
-# Format external_sd as vfat
-make_ext4fs -S /file_contexts -a /cache /dev/block/mmcblk0p3
-
-echo "Formatting external_sd..."
-# Format external_sd as vfat
-mkdosfs /dev/block/mmcblk0p4
-
-echo "Mounting new sdcard..."
-mount -t vfat /dev/block/mmcblk0p4 /external_sd
-echo "Done!"

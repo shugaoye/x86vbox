@@ -57,9 +57,18 @@ BOARD_HAS_NO_REAL_SDCARD := true
 # Double buffer cannot work well on virtualbox
 RECOVERY_GRAPHICS_FORCE_SINGLE_BUFFER := true
 # Define x86vbox specific implementation in recovery
-# X86VBOX_RECOVERY := true
+X86VBOX_RECOVERY := true
 
 #
 # TWRP configuration END
 #
 
+# device-specific extensions to the recovery UI
+TARGET_RECOVERY_UI_LIB := librecovery_ui_x86vbox
+
+# add device-specific extensions to the updater binary
+TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_x86vbox
+# TARGET_RECOVERY_UPDATER_EXTRA_LIBS +=
+
+ADD_RADIO_FILES := true
+TARGET_RELEASETOOLS_EXTENSIONS := $(LOCAL_PATH)

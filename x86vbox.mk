@@ -21,7 +21,7 @@ $(call inherit-product,device/generic/common/x86.mk)
 PRODUCT_NAME := x86vbox
 PRODUCT_BRAND := Android-x86
 PRODUCT_DEVICE := x86vbox
-PRODUCT_MODEL := x86vbox_ch13
+PRODUCT_MODEL := x86vbox_ch14
 
 TARGET_KERNEL_SOURCE := kernel
 TARGET_KERNEL_CONFIG := android-x86_defconfig
@@ -51,6 +51,7 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/recovery/root/sbin/create_partitions.sh:recovery/root/sbin/create_partitions.sh \
     device/generic/x86vbox/recovery/root/sbin/mount.vboxsf:recovery/root/sbin/mount.vboxsf \
     device/generic/x86vbox/recovery/root/sbin/gdbserver:recovery/root/sbin/gdbserver \
+    device/generic/x86vbox/recovery/root/sbin/parted:recovery/root/sbin/parted \
     device/generic/x86vbox/recovery/root/x86vbox/atkbd.ko:recovery/root/x86vbox/atkbd.ko \
     device/generic/x86vbox/recovery/root/x86vbox/cn.ko:recovery/root/x86vbox/cn.ko \
     device/generic/x86vbox/recovery/root/x86vbox/uvesafb.ko:recovery/root/x86vbox/uvesafb.ko \
@@ -82,5 +83,6 @@ PRODUCT_COPY_FILES += \
     device/generic/x86vbox/recovery/root/system/lib/libm.so:recovery/root/system/lib/libm.so \
     device/generic/x86vbox/recovery/root/system/lib/libpcre.so:recovery/root/system/lib/libpcre.so \
     device/generic/x86vbox/recovery/root/system/lib/libselinux.so:recovery/root/system/lib/libselinux.so \
+    device/generic/x86vbox/recovery/root/system/lib/libext2_uuid.so:recovery/root/system/lib/libext2_uuid.so \
     $(LOCAL_KERNEL):kernel \
 
