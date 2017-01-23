@@ -18,6 +18,7 @@
 #include <linux/input.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 #include "common.h"
 #include "screen_ui.h"

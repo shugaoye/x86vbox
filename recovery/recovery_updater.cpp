@@ -15,6 +15,8 @@
  *
  *****************************************************************************/
 
+#include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,18 +30,24 @@ Value* ReprogramX86vboxFn(const char* name, State* state, int argc, Expr* argv[]
   bool success = false;
 
   if (argc != 2) {
-    return ErrorAbort(state, "%s() expects 2 args, got %d", name, argc);
+    return ErrorAbort(state, kArgsParsingFailure, "%s() expects 2 args, got %d", name, argc);
   }
 
   char* zip_path;
   char* dest_path;
   if (ReadArgs(state, argv, 2, &zip_path, &dest_path) < 0) return NULL;
 
+  struct utimbuf timestamp = { 1217592000, 1217592000 };  // 8/1/2008 default
+
   /* Start to extract files. */
   MemMapping map;
   if (sysMapFile(zip_path, &map) != 0) {
       printf("failed to map package %s\n", zip_path);
-      goto done;
+      sysReleaseMap(&map);
+      unlink(zip_path);
+      free(zip_path);
+      free(dest_path);
+      return NULL;
   }
 
   ZipArchive za;
@@ -48,16 +56,18 @@ Value* ReprogramX86vboxFn(const char* name, State* state, int argc, Expr* argv[]
   if (err != 0) {
       printf("failed to open package %s: %s\n",
     		  zip_path, strerror(err));
-      goto done;
+      mzCloseZipArchive(&za);
+      sysReleaseMap(&map);
+      unlink(zip_path);
+      free(zip_path);
+      free(dest_path);
+      return NULL;
   }
-
-  struct utimbuf timestamp = { 1217592000, 1217592000 };  // 8/1/2008 default
 
   success = mzExtractRecursive(&za, "android-x86vbox", dest_path,
                                     &timestamp,
                                     NULL, NULL, sehandle);
   /* End to extract files. */
-done:
   mzCloseZipArchive(&za);
   sysReleaseMap(&map);
   unlink(zip_path);

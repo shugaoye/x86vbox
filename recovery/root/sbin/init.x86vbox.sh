@@ -20,4 +20,4 @@ insmod vboxsf.ko
 # insmod vboxvideo.ko
 insmod uvesafb.ko mode_option=${UVESA_MODE:-1024x768}-32
 
-/sbin/mount.vboxsf sdcard /vendor
+/sbin/mount.vboxsf x86vbox /mnt

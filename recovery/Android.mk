@@ -13,7 +13,9 @@ include $(BUILD_STATIC_LIBRARY)
 include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := eng
 LOCAL_C_INCLUDES += bootable/recovery
-LOCAL_SRC_FILES := recovery_updater.c
+LOCAL_SRC_FILES := recovery_updater.cpp
+
+LOCAL_STATIC_LIBRARIES += libselinux libedify
 
 LOCAL_MODULE := librecovery_updater_x86vbox
 include $(BUILD_STATIC_LIBRARY)
