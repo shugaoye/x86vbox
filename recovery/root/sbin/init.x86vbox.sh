@@ -7,9 +7,9 @@ cd /bin;busybox --install -s
 
 cd /x86vbox
 insmod atkbd.ko
-insmod cn.ko
 insmod vboxguest.ko
 insmod vboxsf.ko
+insmod cn.ko
 # insmod drm.ko
 # insmod ttm.ko
 # insmod fb_sys_fops.ko
@@ -20,4 +20,4 @@ insmod vboxsf.ko
 # insmod vboxvideo.ko
 insmod uvesafb.ko mode_option=${UVESA_MODE:-1024x768}-32
 
-/sbin/mount.vboxsf sdcard /vendor
+/sbin/mount.vboxsf x86vbox /mnt
