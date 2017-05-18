@@ -7,9 +7,9 @@ cd /bin;busybox --install -s
 
 cd /x86vbox
 insmod atkbd.ko
-insmod cn.ko
 insmod vboxguest.ko
 insmod vboxsf.ko
+insmod cn.ko
 # insmod drm.ko
 # insmod ttm.ko
 # insmod fb_sys_fops.ko
